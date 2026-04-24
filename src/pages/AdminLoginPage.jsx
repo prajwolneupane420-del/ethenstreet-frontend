@@ -8,16 +8,23 @@ const AdminLoginPage = () => {
   const { setSession, flash } = useApp();
   const navigate = useNavigate();
 
-  const submit = async (e) => {
-    e.preventDefault();
-    try {
-      const data = await loginAdmin(form);
-      setSession(data);
-      navigate('/admin');
-    } catch (error) {
-      flash(error.response?.data?.message || 'Admin login failed');
+ const submit = async (e) => {
+  e.preventDefault();
+  try {
+    const data = await loginAdmin(form);
+
+    // 🔥 ROLE CHECK HERE
+    if (data.user?.role !== "admin") {
+      flash("Access denied. Not an admin.");
+      return;
     }
-  };
+
+    setSession(data);
+    navigate("/admin");
+  } catch (error) {
+    flash(error.response?.data?.message || "Admin login failed");
+  }
+};
 
   return (
     <section className="container-shell py-12">
